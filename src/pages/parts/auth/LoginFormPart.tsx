@@ -65,7 +65,7 @@ export function LoginFormPart(props: LoginFormPartProps) {
   );
 
   return (
-    <LargeCard top={<BrandPill backgroundClass="bg-[#161527]" />}>
+    <LargeCard top={<BrandPill />}>
       <LargeCardText title={t("auth.login.title")}>
         {t("auth.login.description")}
       </LargeCardText>

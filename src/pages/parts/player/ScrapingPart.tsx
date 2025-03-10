@@ -9,16 +9,12 @@ import {
   scrapePartsToProviderMetric,
   useReportProviders,
 } from "@/backend/helpers/report";
-import { Button } from "@/components/buttons/Button";
+import { Icon, Icons } from "@/components/Icon";
 import { Loading } from "@/components/layout/Loading";
-import {
-  ScrapeCard,
-  ScrapeItem,
-} from "@/components/player/internals/ScrapeCard";
+import { ProgressRing } from "@/components/layout/ProgressRing";
 import {
   ScrapingItems,
   ScrapingSegment,
-  useListCenter,
   useScrape,
 } from "@/hooks/useProviderScrape";
 
@@ -33,21 +29,57 @@ export interface ScrapingProps {
   ) => void;
 }
 
+interface ScrapePillProps {
+  name: string;
+  status: string;
+  percentage: number;
+}
+
+function ScrapePillSkeleton() {
+  return (
+    <div className="h-9 w-[220px] rounded-full bg-background-secondary opacity-50" />
+  );
+}
+
+function ScrapePill({ name, status, percentage }: ScrapePillProps) {
+  const isError = status === "failure";
+
+  return (
+    <div className="flex h-9 w-[220px] items-center rounded-full bg-background-secondary p-3">
+      <div className="mr-2 flex w-[18px] items-center justify-center">
+        {!isError ? (
+          <ProgressRing
+            className="h-[18px] w-[18px] text-primary"
+            percentage={percentage}
+            radius={40}
+          />
+        ) : (
+          <Icon icon={Icons.X} className="text-[0.85em] text-status-error" />
+        )}
+      </div>
+      <div className="flex-1 overflow-hidden">
+        <p
+          className={classNames(
+            "overflow-hidden text-ellipsis whitespace-nowrap",
+            {
+              "text-status-error": isError,
+            },
+          )}
+        >
+          {name}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function ScrapingPart(props: ScrapingProps) {
   const { report } = useReportProviders();
   const { startScraping, sourceOrder, sources, currentSource } = useScrape();
   const isMounted = useMountedState();
   const { t } = useTranslation();
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const listRef = useRef<HTMLDivElement | null>(null);
   const [failedStartScrape, setFailedStartScrape] = useState<boolean>(false);
-  const renderedOnce = useListCenter(
-    containerRef,
-    listRef,
-    sourceOrder,
-    currentSource,
-  );
 
   const resultRef = useRef({
     sourceOrder,
@@ -92,91 +124,56 @@ export function ScrapingPart(props: ScrapingProps) {
     return <WarningPart>{t("player.turnstile.error")}</WarningPart>;
 
   return (
-    <div
-      className="h-full w-full relative dir-neutral:origin-top-left flex"
-      ref={containerRef}
-    >
+    <div className="h-full w-full relative flex flex-col items-center justify-center">
       {!sourceOrder || sourceOrder.length === 0 ? (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col justify-center z-0">
+        <div className="text-center flex flex-col justify-center z-0">
           <Loading className="mb-8" />
           <p>{t("player.turnstile.verifyingHumanity")}</p>
         </div>
-      ) : null}
-      <div
-        className={classNames({
-          "absolute transition-[transform,opacity] opacity-0 dir-neutral:left-0":
-            true,
-          "!opacity-100": renderedOnce,
-        })}
-        ref={listRef}
-      >
-        {sourceOrder.map((order) => {
-          const source = sources[order.id];
-          const distance = Math.abs(
-            sourceOrder.findIndex((o) => o.id === order.id) -
-              currentProviderIndex,
-          );
-          return (
+      ) : (
+        <div className="flex flex-col items-center gap-6">
+          <div className="text-center flex flex-col items-center gap-3">
+            <Loading className="mb-0" />
+            <p className="text-type-secondary">
+              Finding the best video for you
+            </p>
+          </div>
+          <div className="relative h-16 w-[400px] overflow-hidden">
             <div
-              className="transition-opacity duration-100"
-              style={{ opacity: Math.max(0, 1 - distance * 0.3) }}
-              key={order.id}
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                maskImage: `linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 80px, rgba(0, 0, 0, 1) calc(100% - 80px), rgba(0, 0, 0, 0) 100%)`,
+                WebkitMaskImage: `linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 80px, rgba(0, 0, 0, 1) calc(100% - 80px), rgba(0, 0, 0, 0) 100%)`,
+              }}
             >
-              <ScrapeCard
-                id={order.id}
-                name={source.name}
-                status={source.status}
-                hasChildren={order.children.length > 0}
-                percentage={source.percentage}
-              >
+              <div className="relative flex h-full w-[220px] items-center">
                 <div
-                  className={classNames({
-                    "space-y-6 mt-8": order.children.length > 0,
-                  })}
+                  className="absolute inset-y-0 left-0 flex items-center gap-[16px] transition-transform duration-200"
+                  style={{
+                    transform: `translateX(${
+                      -1 * (220 + 16) * (currentProviderIndex + 1)
+                    }px)`,
+                  }}
                 >
-                  {order.children.map((embedId) => {
-                    const embed = sources[embedId];
+                  <ScrapePillSkeleton />
+                  {sourceOrder.map((order) => {
+                    const source = sources[order.id];
                     return (
-                      <ScrapeItem
-                        id={embedId}
-                        name={embed.name}
-                        status={embed.status}
-                        percentage={embed.percentage}
-                        key={embedId}
+                      <ScrapePill
+                        key={order.id}
+                        name={source.name}
+                        status={source.status}
+                        percentage={source.percentage}
                       />
                     );
                   })}
+                  <ScrapePillSkeleton />
                 </div>
-              </ScrapeCard>
+              </div>
             </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-export function ScrapingPartInterruptButton() {
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex gap-3 pb-3">
-      <Button
-        href="/"
-        theme="secondary"
-        padding="md:px-17 p-3"
-        className="mt-6"
-      >
-        {t("notFound.goHome")}
-      </Button>
-      <Button
-        onClick={() => window.location.reload()}
-        theme="purple"
-        padding="md:px-17 p-3"
-        className="mt-6"
-      >
-        {t("notFound.reloadButton")}
-      </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

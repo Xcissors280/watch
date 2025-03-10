@@ -6,6 +6,7 @@ import { useAsync } from "react-use";
 import { getBackendMeta } from "@/backend/accounts/meta";
 import { Icon, Icons } from "@/components/Icon";
 import { SidebarLink, SidebarSection } from "@/components/layout/Sidebar";
+import { GlitchText } from "@/components/text/GlitchText";
 import { Divider } from "@/components/utils/Divider";
 import { useBackendUrl } from "@/hooks/auth/useBackendUrl";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -47,11 +48,6 @@ export function SidebarPart() {
       textKey: "settings.preferences.title",
       id: "settings-preferences",
       icon: Icons.SETTINGS,
-    },
-    {
-      textKey: "settings.appearance.title",
-      id: "settings-appearance",
-      icon: Icons.BRUSH,
     },
     {
       textKey: "settings.subtitles.title",
@@ -120,7 +116,7 @@ export function SidebarPart() {
     <div className="text-settings-sidebar-type-inactive sidebar-boundary">
       <Sticky
         topOffset={-6 * rem}
-        stickyClassName="pt-[6rem]"
+        stickyClassName="pt-[8rem]"
         disabled={isMobile}
         hideOnBoundaryHit={false}
         boundaryElement=".sidebar-boundary"
@@ -144,7 +140,10 @@ export function SidebarPart() {
           className="text-sm"
           title={t("settings.sidebar.info.title")}
         >
-          <div className="px-3 py-3.5 rounded-lg bg-largeCard-background bg-opacity-50 grid grid-cols-2 gap-4">
+          <div
+            className="px-3 py-3.5 rounded-lg bg-largeCard-background bg-opacity-50 grid grid-cols-2 gap-4"
+            data-info-card
+          >
             {/* Hostname */}
             <div className="col-span-2 space-y-1">
               <p className="text-type-dimmed font-medium">
@@ -179,9 +178,14 @@ export function SidebarPart() {
               <p className="text-type-dimmed font-medium">
                 {t("settings.sidebar.info.appVersion")}
               </p>
-              <p className="text-type-dimmed px-2 py-1 rounded bg-settings-sidebar-badge inline-block">
-                {conf().APP_VERSION}
-              </p>
+              <div>
+                <GlitchText
+                  text={conf().APP_VERSION}
+                  glitchedText="3.2.1"
+                  className="text-type-dimmed px-2 py-1 rounded bg-settings-sidebar-badge inline-block"
+                  groupHover
+                />
+              </div>
             </div>
 
             {/* Backend version */}

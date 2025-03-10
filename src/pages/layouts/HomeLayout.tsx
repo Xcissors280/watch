@@ -1,4 +1,3 @@
-import { FooterView } from "@/components/layout/Footer";
 import { Navigation } from "@/components/layout/Navigation";
 
 export function HomeLayout(props: {
@@ -6,9 +5,9 @@ export function HomeLayout(props: {
   children: React.ReactNode;
 }) {
   return (
-    <FooterView>
+    <div className="flex flex-col min-h-screen pb-20">
       <Navigation bg={props.showBg} />
       {props.children}
-    </FooterView>
+    </div>
   );
 }

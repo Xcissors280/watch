@@ -360,24 +360,13 @@ export function SettingsPage() {
             setenableSourceOrder={state.enableSourceOrder.set}
           />
         </div>
-        <div id="settings-appearance" className="mt-28">
-          <AppearancePart
-            active={previewTheme ?? "default"}
-            inUse={activeTheme ?? "default"}
-            setTheme={setThemeWithPreview}
-            enableDiscover={state.enableDiscover.state}
-            setEnableDiscover={state.enableDiscover.set}
-            enablePopDetails={state.enablePopDetails.state}
-            setEnablePopDetails={state.enablePopDetails.set}
-          />
-        </div>
         <div id="settings-captions" className="mt-28">
           <CaptionsPart
             styling={state.subtitleStyling.state}
             setStyling={state.subtitleStyling.set}
           />
         </div>
-        <div id="settings-connection" className="mt-28">
+        <div id="settings-connection" className="mt-28 mb-10">
           <ConnectionsPart
             backendUrl={state.backendUrl.state}
             setBackendUrl={state.backendUrl.set}

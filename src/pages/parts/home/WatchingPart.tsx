@@ -13,11 +13,12 @@ import { MediaItem } from "@/utils/mediaTypes";
 
 const LONG_PRESS_DURATION = 500; // 0.5 seconds
 
-export function WatchingPart({
-  onItemsChange,
-}: {
+interface WatchingPartProps {
   onItemsChange: (hasItems: boolean) => void;
-}) {
+  className?: string;
+}
+
+export function WatchingPart({ onItemsChange, className }: WatchingPartProps) {
   const { t } = useTranslation();
   const progressItems = useProgressStore((s) => s.items);
   const removeItem = useProgressStore((s) => s.removeItem);
@@ -80,7 +81,7 @@ export function WatchingPart({
   if (sortedProgressItems.length === 0) return null;
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <SectionHeading
         title={t("home.continueWatching.sectionTitle")}
         icon={Icons.CLOCK}

@@ -7,7 +7,6 @@ import { Icon, Icons } from "@/components/Icon";
 import { ThinContainer } from "@/components/layout/ThinContainer";
 import { useSlashFocus } from "@/components/player/hooks/useSlashFocus";
 import { HeroTitle } from "@/components/text/HeroTitle";
-import { useIsTV } from "@/hooks/useIsTv";
 import { useRandomTranslation } from "@/hooks/useRandomTranslation";
 import { useSearchQuery } from "@/hooks/useSearchQuery";
 import { conf } from "@/setup/config";
@@ -65,8 +64,6 @@ export function HeroPart({ setIsSticky, searchParams }: HeroPartProps) {
   );
   const { width: windowWidth, height: windowHeight } = useWindowSize();
 
-  const { isTV } = useIsTV();
-
   // Detect if running as a PWA on iOS
   const isIOSPWA =
     /iPad|iPhone|iPod/i.test(navigator.userAgent) &&
@@ -105,9 +102,9 @@ export function HeroPart({ setIsSticky, searchParams }: HeroPartProps) {
     <ThinContainer>
       <div className="mt-44 space-y-16 text-center">
         <div className="relative z-10 mb-16">
-          {isTV && search.length > 0 ? null : (
-            <HeroTitle className="mx-auto max-w-md">{title}</HeroTitle>
-          )}
+          <HeroTitle className="mx-auto max-w-md">
+            What do you want to watch?
+          </HeroTitle>
         </div>
         <div className="relative h-20 z-30">
           <Sticky

@@ -11,46 +11,6 @@ const availableThemes = [
     selector: "theme-default",
     key: "settings.appearance.themes.default",
   },
-  {
-    id: "classic",
-    selector: "theme-classic",
-    key: "settings.appearance.themes.classic",
-  },
-  {
-    id: "blue",
-    selector: "theme-blue",
-    key: "settings.appearance.themes.blue",
-  },
-  {
-    id: "teal",
-    selector: "theme-teal",
-    key: "settings.appearance.themes.teal",
-  },
-  {
-    id: "red",
-    selector: "theme-red",
-    key: "settings.appearance.themes.red",
-  },
-  {
-    id: "gray",
-    selector: "theme-gray",
-    key: "settings.appearance.themes.gray",
-  },
-  {
-    id: "green",
-    selector: "theme-green",
-    key: "settings.appearance.themes.green",
-  },
-  {
-    id: "mocha",
-    selector: "theme-mocha",
-    key: "settings.appearance.themes.mocha",
-  },
-  {
-    id: "pink",
-    selector: "theme-pink",
-    key: "settings.appearance.themes.pink",
-  },
 ];
 
 function ThemePreview(props: {

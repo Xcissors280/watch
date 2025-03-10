@@ -1,6 +1,5 @@
 import classNames from "classnames";
 
-import { FooterView } from "@/components/layout/Footer";
 import { Navigation } from "@/components/layout/Navigation";
 
 export function BlurEllipsis(props: { positionClass?: string }) {
@@ -34,10 +33,8 @@ export function SubPageLayout(props: { children: React.ReactNode }) {
     >
       <BlurEllipsis />
       {/* Main page */}
-      <FooterView>
-        <Navigation doBackground noLightbar />
-        <div className="mt-40 relative">{props.children}</div>
-      </FooterView>
+      <Navigation />
+      <div className="mt-40 relative">{props.children}</div>
     </div>
   );
 }

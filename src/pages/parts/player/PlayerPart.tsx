@@ -11,7 +11,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { PlayerMeta, playerStatus } from "@/stores/player/slices/source";
 import { usePlayerStore } from "@/stores/player/store";
 
-import { ScrapingPartInterruptButton, Tips } from "./ScrapingPart";
+import { Tips } from "./ScrapingPart";
 
 export interface PlayerPartProps {
   children?: ReactNode;
@@ -88,8 +88,6 @@ export function PlayerPart(props: PlayerPartProps) {
             <span className="text mx-3 text-type-secondary">/</span>
             <Player.Title />
 
-            <Player.InfoButton />
-
             <Player.BookmarkButton />
           </div>
           <div className="text-center hidden xl:flex justify-center items-center">
@@ -111,10 +109,7 @@ export function PlayerPart(props: PlayerPartProps) {
 
       <Player.BottomControls show={showTargets}>
         {status === playerStatus.PLAYING ? null : <Tips />}
-        <div className="flex items-center justify-center space-x-3 h-full">
-          {status === playerStatus.SCRAPING ? (
-            <ScrapingPartInterruptButton />
-          ) : null}
+        <div className="flex items-center space-x-3 w-full">
           {status === playerStatus.PLAYING ? (
             <>
               {isMobile ? <Player.Time short /> : null}
@@ -122,18 +117,19 @@ export function PlayerPart(props: PlayerPartProps) {
             </>
           ) : null}
         </div>
-        <div className="hidden lg:flex justify-between" dir="ltr">
+        <div className="hidden lg:flex items-center w-full">
           <Player.LeftSideControls>
             {status === playerStatus.PLAYING ? (
-              <>
+              <div className="flex items-center px-2">
                 <Player.Pause />
                 <Player.SkipBackward />
                 <Player.SkipForward />
-                <Player.Volume />
+                <Player.Volume className="mr-2" />
                 <Player.Time />
-              </>
+              </div>
             ) : null}
           </Player.LeftSideControls>
+          <div className="flex-1" />
           <div className="flex items-center space-x-3">
             <Player.Episodes />
             {status === playerStatus.PLAYING ? (
@@ -143,15 +139,10 @@ export function PlayerPart(props: PlayerPartProps) {
                 <Player.Chromecast />
               </>
             ) : null}
-            {status === playerStatus.PLAYBACK_ERROR ||
-            status === playerStatus.PLAYING ? (
-              <Player.Captions />
-            ) : null}
+            {(status === playerStatus.PLAYBACK_ERROR ||
+              status === playerStatus.PLAYING) && <Player.Captions />}
             <Player.Settings />
-            {/* Fullscreen on when not shifting */}
             {!isShifting && <Player.Fullscreen />}
-
-            {/* Expand button visible when shifting */}
             {isShifting && (
               <div>
                 <Widescreen />
@@ -159,25 +150,20 @@ export function PlayerPart(props: PlayerPartProps) {
             )}
           </div>
         </div>
-        <div className="grid grid-cols-[2.5rem,1fr,2.5rem] gap-3 lg:hidden">
+        <div className="grid grid-cols-[56px,1fr,56px] items-center gap-3 lg:hidden">
           <div />
           <div className="flex justify-center space-x-3">
-            {/* Disable PiP for iOS PWA */}
-            {!isIOSPWA &&
-              (status === playerStatus.PLAYING ? <Player.Pip /> : null)}
+            {!isIOSPWA && status === playerStatus.PLAYING && <Player.Pip />}
             <Player.Episodes />
             <Player.Settings />
-            {/* Expand button for iOS PWA only */}
             {isIOSPWA && status === playerStatus.PLAYING && <Widescreen />}
           </div>
           <div>
-            {/* Disable for iOS PWA */}
             {!isIOSPWA && (
               <div>
                 <Player.Fullscreen />
               </div>
             )}
-            {/* Add info for iOS PWA */}
             {isIOSPWA && (
               <div>
                 <IosPwaLimitations />
