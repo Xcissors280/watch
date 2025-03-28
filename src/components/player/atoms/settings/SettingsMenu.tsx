@@ -11,6 +11,7 @@ import { useOverlayRouter } from "@/hooks/useOverlayRouter";
 import { usePlayerStore } from "@/stores/player/store";
 import { qualityToString } from "@/stores/player/utils/qualities";
 import { useSubtitleStore } from "@/stores/subtitles";
+import { useThemeStore } from "@/stores/theme";
 import { getPrettyLanguageNameFromLocale } from "@/utils/language";
 
 import { useDownloadLink } from "./Downloads";
@@ -34,6 +35,10 @@ export function SettingsMenu({ id }: { id: string }) {
     return source?.name ?? "...";
   }, [currentSourceId]);
   const { toggleLastUsed } = useCaptions();
+  const activeTheme = useThemeStore((s) => s.theme);
+  const themeName = useMemo(() => {
+    return t(`settings.appearance.themes.${activeTheme || "default"}`);
+  }, [t, activeTheme]);
 
   const selectedLanguagePretty = selectedCaptionLanguage
     ? (getPrettyLanguageNameFromLocale(selectedCaptionLanguage) ??
@@ -130,6 +135,12 @@ export function SettingsMenu({ id }: { id: string }) {
         </Menu.ChevronLink>
         <Menu.ChevronLink onClick={() => router.navigate("/playback")}>
           {t("player.menus.settings.playbackItem")}
+        </Menu.ChevronLink>
+        <Menu.ChevronLink
+          onClick={() => router.navigate("/theme")}
+          rightText={themeName}
+        >
+          Theme
         </Menu.ChevronLink>
       </Menu.Section>
     </Menu.Card>

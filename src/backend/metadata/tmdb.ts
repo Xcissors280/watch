@@ -358,3 +358,35 @@ export function formatTMDBSearchResult(
     object_type: mediatype,
   };
 }
+
+export async function getNumberedIDs(
+  id: string,
+  seasonNumber: string,
+  episodeNumber: string,
+): Promise<{ season: string; episode: string } | undefined> {
+  const season = parseInt(seasonNumber, 10);
+  const episode = parseInt(episodeNumber, 10);
+  if (Number.isNaN(season) || Number.isNaN(episode)) {
+    return undefined;
+  }
+
+  const seasonData = await get<TMDBSeason>(`/tv/${id}/season/${season}`);
+  if (!seasonData || !seasonData.episodes) {
+    return undefined;
+  }
+
+  const targetEpisode = seasonData.episodes.find(
+    (e) => e.episode_number === episode,
+  );
+
+  if (!targetEpisode) {
+    // eslint-disable-next-line no-console
+    console.log("Episode not found");
+    return undefined;
+  }
+
+  return {
+    season: seasonData.id.toString(),
+    episode: targetEpisode.id.toString(),
+  };
+}

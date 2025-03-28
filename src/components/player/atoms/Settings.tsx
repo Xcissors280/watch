@@ -23,6 +23,7 @@ import { PlaybackSettingsView } from "./settings/PlaybackSettingsView";
 import { QualityView } from "./settings/QualityView";
 import { SettingsMenu } from "./settings/SettingsMenu";
 import SourceCaptionsView from "./settings/SourceCaptionsView";
+import { ThemeView } from "./settings/ThemeView";
 
 function SettingsOverlay({ id }: { id: string }) {
   const [chosenSourceId, setChosenSourceId] = useState<string | null>(null);
@@ -131,6 +132,11 @@ function SettingsOverlay({ id }: { id: string }) {
         <OverlayPage id={id} path="/playback" width={343} height={215}>
           <Menu.Card>
             <PlaybackSettingsView id={id} />
+          </Menu.Card>
+        </OverlayPage>
+        <OverlayPage id={id} path="/theme" width={343} height={431}>
+          <Menu.Card>
+            <ThemeView id={id} />
           </Menu.Card>
         </OverlayPage>
         <DownloadRoutes id={id} />

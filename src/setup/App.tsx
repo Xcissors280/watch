@@ -9,26 +9,19 @@ import {
   useParams,
 } from "react-router-dom";
 
-import { convertLegacyUrl, isLegacyUrl } from "@/backend/metadata/getmeta";
-import { generateQuickSearchMediaUrl } from "@/backend/metadata/tmdb";
+import {
+  convertEmbedUrl,
+  convertLegacyUrl,
+  isEmbedUrl,
+  isLegacyUrl,
+} from "@/backend/metadata/getmeta";
 import { useOnlineListener } from "@/hooks/usePing";
-import { AboutPage } from "@/pages/About";
 import { AdminPage } from "@/pages/admin/AdminPage";
 import VideoTesterView from "@/pages/developer/VideoTesterView";
 import { Discover } from "@/pages/discover/Discover";
-import { DmcaPage } from "@/pages/Dmca";
 import MaintenancePage from "@/pages/errors/MaintenancePage";
 import { NotFoundPage } from "@/pages/errors/NotFoundPage";
-import { HomePage } from "@/pages/HomePage";
 import { JipPage } from "@/pages/Jip";
-import { LoginPage } from "@/pages/Login";
-import { MigrationPage } from "@/pages/migration/Migration";
-import { MigrationDirectPage } from "@/pages/migration/MigrationDirect";
-import { OnboardingPage } from "@/pages/onboarding/Onboarding";
-import { OnboardingExtensionPage } from "@/pages/onboarding/OnboardingExtension";
-import { OnboardingProxyPage } from "@/pages/onboarding/OnboardingProxy";
-import { RegisterPage } from "@/pages/Register";
-import { SupportPage } from "@/pages/Support";
 import { Layout } from "@/setup/Layout";
 import { useHistoryListener } from "@/stores/history";
 import { LanguageProvider } from "@/stores/language";
@@ -57,38 +50,6 @@ function LegacyUrlView({ children }: { children: ReactElement }) {
   return children;
 }
 
-function QuickSearch() {
-  const { query } = useParams<{ query: string }>();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (query) {
-      generateQuickSearchMediaUrl(query).then((url) => {
-        navigate(url ?? "/", { replace: true });
-      });
-    } else {
-      navigate("/", { replace: true });
-    }
-  }, [query, navigate]);
-
-  return null;
-}
-
-function QueryView() {
-  const { query } = useParams<{ query: string }>();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (query) {
-      navigate(`/browse/${query}`, { replace: true });
-    } else {
-      navigate("/", { replace: true });
-    }
-  }, [query, navigate]);
-
-  return null;
-}
-
 export const maintenanceTime = "March 31th 11:00 PM - 5:00 AM EST";
 
 function App() {
@@ -109,16 +70,48 @@ function App() {
     }
   }, [setShowDowntime, maintenance]);
 
+  function EmbedRedirectView({ children }: { children: ReactElement }) {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const url = location.pathname;
+      if (!isEmbedUrl(url)) return;
+      convertEmbedUrl(location.pathname).then((convertedUrl) => {
+        navigate(convertedUrl ?? "/", { replace: true });
+      });
+    }, [location.pathname, navigate]);
+
+    if (isEmbedUrl(location.pathname)) return null;
+    return children;
+  }
+
   return (
     <Layout>
       <LanguageProvider />
       {!showDowntime && (
         <Routes>
-          {/* functional routes */}
-          <Route path="/s/:query" element={<QuickSearch />} />
-          <Route path="/search/:type" element={<Navigate to="/browse" />} />
-          <Route path="/search/:type/:query?" element={<QueryView />} />
           {/* pages */}
+          <Route
+            path="/embed/:media"
+            element={
+              <EmbedRedirectView>
+                <Suspense fallback={null}>
+                  <PlayerView />
+                </Suspense>
+              </EmbedRedirectView>
+            }
+          />
+          <Route
+            path="/embed/:media/:seasonNumber/:episodeNumber"
+            element={
+              <EmbedRedirectView>
+                <Suspense fallback={null}>
+                  <PlayerView />
+                </Suspense>
+              </EmbedRedirectView>
+            }
+          />
           <Route
             path="/media/:media"
             element={
@@ -139,39 +132,9 @@ function App() {
               </LegacyUrlView>
             }
           />
-          <Route path="/browse/:query?" element={<HomePage />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route
-            path="/onboarding/extension"
-            element={<OnboardingExtensionPage />}
-          />
-          <Route path="/onboarding/proxy" element={<OnboardingProxyPage />} />
-
-          <Route path="/migration" element={<MigrationDirectPage />} />
-          {/* Migration pages - awaiting import and export fixes
-          <Route path="/migration" element={<MigrationPage />} />
-          <Route path="/migration/direct" element={<MigrationDirectPage />} />
-          */}
-
-          <Route path="/dmca" element={<DmcaPage />} />
-          {/* Support page */}
-          <Route path="/support" element={<SupportPage />} />
           <Route path="/jip" element={<JipPage />} />
           {/* Discover page */}
           <Route path="/discover" element={<Discover />} />
-          {/* Settings page */}
-          <Route
-            path="/settings"
-            element={
-              <Suspense fallback={null}>
-                <SettingsPage />
-              </Suspense>
-            }
-          />
           {/* admin routes */}
           <Route path="/admin" element={<AdminPage />} />
           {/* other */}

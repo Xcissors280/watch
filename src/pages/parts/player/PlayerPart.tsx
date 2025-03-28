@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 
 import IosPwaLimitations from "@/components/buttons/IosPwaLimitations";
+import { Icons } from "@/components/Icon";
 import { BrandPill } from "@/components/layout/BrandPill";
 import { Player } from "@/components/player";
 import { SkipIntroButton } from "@/components/player/atoms/SkipIntroButton";
@@ -84,20 +85,23 @@ export function PlayerPart(props: PlayerPartProps) {
       <Player.TopControls show={showTargets}>
         <div className="grid grid-cols-[1fr,auto] xl:grid-cols-3 items-center">
           <div className="flex space-x-3 items-center">
-            <Player.BackLink url={props.backUrl} />
-            <span className="text mx-3 text-type-secondary">/</span>
+            <div className="hidden">
+              <Player.BackLink url={props.backUrl} />
+              <span className="text mx-3 text-type-secondary">/</span>
+            </div>
             <Player.Title />
-
-            <Player.InfoButton />
-
-            <Player.BookmarkButton />
           </div>
           <div className="text-center hidden xl:flex justify-center items-center">
             <Player.EpisodeTitle />
           </div>
-          <div className="hidden sm:flex items-center justify-end">
+          <a
+            href="https://pstream.org"
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:flex items-center justify-end"
+          >
             <BrandPill />
-          </div>
+          </a>
           <div className="flex sm:hidden items-center justify-end">
             {status === playerStatus.PLAYING ? (
               <>
@@ -135,7 +139,6 @@ export function PlayerPart(props: PlayerPartProps) {
             ) : null}
           </Player.LeftSideControls>
           <div className="flex items-center space-x-3">
-            <Player.Episodes />
             {status === playerStatus.PLAYING ? (
               <>
                 <Player.Pip />
@@ -165,7 +168,6 @@ export function PlayerPart(props: PlayerPartProps) {
             {/* Disable PiP for iOS PWA */}
             {!isIOSPWA &&
               (status === playerStatus.PLAYING ? <Player.Pip /> : null)}
-            <Player.Episodes />
             <Player.Settings />
             {/* Expand button for iOS PWA only */}
             {isIOSPWA && status === playerStatus.PLAYING && <Widescreen />}
@@ -189,11 +191,6 @@ export function PlayerPart(props: PlayerPartProps) {
 
       <Player.VolumeChangedPopout />
       <Player.SubtitleDelayPopout />
-
-      <Player.NextEpisodeButton
-        controlsShowing={showTargets}
-        onChange={props.onMetaChange}
-      />
 
       <SkipIntroButton controlsShowing={showTargets} skipTime={skiptime} />
     </Player.Container>
